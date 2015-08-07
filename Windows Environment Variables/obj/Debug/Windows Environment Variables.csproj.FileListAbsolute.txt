@@ -1,0 +1,18 @@
+c:\users\carlos\documents\visual studio 2013\Projects\Windows Environment Variables\Windows Environment Variables\bin\Debug\Windows Environment Variables.exe.config
+c:\users\carlos\documents\visual studio 2013\Projects\Windows Environment Variables\Windows Environment Variables\bin\Debug\Windows Environment Variables.exe
+c:\users\carlos\documents\visual studio 2013\Projects\Windows Environment Variables\Windows Environment Variables\bin\Debug\Windows Environment Variables.pdb
+c:\users\carlos\documents\visual studio 2013\Projects\Windows Environment Variables\Windows Environment Variables\obj\Debug\Windows Environment Variables.csprojResolveAssemblyReference.cache
+c:\users\carlos\documents\visual studio 2013\Projects\Windows Environment Variables\Windows Environment Variables\obj\Debug\Windows_Environment_Variables.Form1.resources
+c:\users\carlos\documents\visual studio 2013\Projects\Windows Environment Variables\Windows Environment Variables\obj\Debug\Windows_Environment_Variables.Properties.Resources.resources
+c:\users\carlos\documents\visual studio 2013\Projects\Windows Environment Variables\Windows Environment Variables\obj\Debug\Windows Environment Variables.csproj.GenerateResource.Cache
+c:\users\carlos\documents\visual studio 2013\Projects\Windows Environment Variables\Windows Environment Variables\obj\Debug\Windows Environment Variables.exe
+c:\users\carlos\documents\visual studio 2013\Projects\Windows Environment Variables\Windows Environment Variables\obj\Debug\Windows Environment Variables.pdb
+C:\Git Repos\WindowsEnvironmentVariables\Windows Environment Variables\bin\Debug\Windows Environment Variables.exe.config
+C:\Git Repos\WindowsEnvironmentVariables\Windows Environment Variables\obj\Debug\Windows Environment Variables.exe
+C:\Git Repos\WindowsEnvironmentVariables\Windows Environment Variables\obj\Debug\Windows Environment Variables.pdb
+C:\Git Repos\WindowsEnvironmentVariables\Windows Environment Variables\bin\Debug\Windows Environment Variables.exe
+C:\Git Repos\WindowsEnvironmentVariables\Windows Environment Variables\bin\Debug\Windows Environment Variables.pdb
+C:\Git Repos\WindowsEnvironmentVariables\Windows Environment Variables\obj\Debug\Windows Environment Variables.csprojResolveAssemblyReference.cache
+C:\Git Repos\WindowsEnvironmentVariables\Windows Environment Variables\obj\Debug\Windows_Environment_Variables.Form1.resources
+C:\Git Repos\WindowsEnvironmentVariables\Windows Environment Variables\obj\Debug\Windows_Environment_Variables.Properties.Resources.resources
+C:\Git Repos\WindowsEnvironmentVariables\Windows Environment Variables\obj\Debug\Windows Environment Variables.csproj.GenerateResource.Cache
