@@ -16,3 +16,12 @@ C:\Git Repos\WindowsEnvironmentVariables\Windows Environment Variables\obj\Debug
 C:\Git Repos\WindowsEnvironmentVariables\Windows Environment Variables\obj\Debug\Windows_Environment_Variables.Form1.resources
 C:\Git Repos\WindowsEnvironmentVariables\Windows Environment Variables\obj\Debug\Windows_Environment_Variables.Properties.Resources.resources
 C:\Git Repos\WindowsEnvironmentVariables\Windows Environment Variables\obj\Debug\Windows Environment Variables.csproj.GenerateResource.Cache
+C:\Git Repos\WindowsEnvironmentVariables\WinEnvVariablesEditor\Windows Environment Variables\bin\Debug\Windows Environment Variables.exe.config
+C:\Git Repos\WindowsEnvironmentVariables\WinEnvVariablesEditor\Windows Environment Variables\obj\Debug\Windows Environment Variables.exe
+C:\Git Repos\WindowsEnvironmentVariables\WinEnvVariablesEditor\Windows Environment Variables\obj\Debug\Windows Environment Variables.pdb
+C:\Git Repos\WindowsEnvironmentVariables\WinEnvVariablesEditor\Windows Environment Variables\bin\Debug\Windows Environment Variables.exe
+C:\Git Repos\WindowsEnvironmentVariables\WinEnvVariablesEditor\Windows Environment Variables\bin\Debug\Windows Environment Variables.pdb
+C:\Git Repos\WindowsEnvironmentVariables\WinEnvVariablesEditor\Windows Environment Variables\obj\Debug\Windows Environment Variables.csprojResolveAssemblyReference.cache
+C:\Git Repos\WindowsEnvironmentVariables\WinEnvVariablesEditor\Windows Environment Variables\obj\Debug\Windows_Environment_Variables.Form1.resources
+C:\Git Repos\WindowsEnvironmentVariables\WinEnvVariablesEditor\Windows Environment Variables\obj\Debug\Windows_Environment_Variables.Properties.Resources.resources
+C:\Git Repos\WindowsEnvironmentVariables\WinEnvVariablesEditor\Windows Environment Variables\obj\Debug\Windows Environment Variables.csproj.GenerateResource.Cache

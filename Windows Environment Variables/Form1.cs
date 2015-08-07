@@ -11,6 +11,9 @@ using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Security.Principal;
+using Microsoft.Win32;
+using System.Diagnostics.Contracts;
 
 namespace Windows_Environment_Variables
 {
@@ -22,9 +25,26 @@ namespace Windows_Environment_Variables
         // The declaration is similar to the SDK function
         public static extern bool SetEnvironmentVariable(string lpName, string lpValue);
 
+
+
+        const int HWND_BROADCAST = 0xffff;
+        const uint WM_SETTINGCHANGE = 0x001a;
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static extern bool SendNotifyMessage(IntPtr hWnd, uint Msg,
+            UIntPtr wParam, string lParam);
+
+
         public Form1()
         {
             InitializeComponent();
+        }
+
+        public static void NotifyUserEnvironmentVariableChanged()
+        {
+            const int HWND_BROADCAST = 0xffff;
+            const uint WM_SETTINGCHANGE = 0x001a;
+            SendNotifyMessage((IntPtr)HWND_BROADCAST, WM_SETTINGCHANGE, (UIntPtr)0, "Environment");
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -38,6 +58,8 @@ namespace Windows_Environment_Variables
 
         private void ListAllEnvironmentVariables() 
         {
+            listView1.Items.Clear();
+
             int count = 1;
 
             foreach (DictionaryEntry e in System.Environment.GetEnvironmentVariables())
@@ -50,30 +72,7 @@ namespace Windows_Environment_Variables
             var compName = System.Environment.GetEnvironmentVariables()["COMPUTERNAME"];
         }
 
-        /// <summary>
-        /// method for setting the variable of an environment variable associated with
-        /// the current running process
-        /// </summary>
-        /// <param name="variable">variable to set</param>
-        /// <param name="value">value to set the variable to</param>
-        /// <returns></returns>
-        public static bool SetVariable(string variable, string value)
-        {
-            try
-            {
-                // Get the write permission to set the environment variable.
-                EnvironmentPermission permissions = new EnvironmentPermission(EnvironmentPermissionAccess.Write, variable);
-
-                permissions.Demand();
-
-                return SetEnvironmentVariable(variable, value);
-            }
-            catch (SecurityException ex)
-            {
-                MessageBox.Show(string.Format("Error while setting variable {0} : {1}", variable, ex.Message));
-            }
-            return false;
-        }
+        
 
         /// <summary>
         /// method for getting all available environment variables
@@ -200,7 +199,7 @@ namespace Windows_Environment_Variables
                 color = System.Drawing.Color.FromArgb(argbColor);
             }
             catch (ArgumentException){}
-
+            catch (Exception) { }
 
             newSubmit.FlatAppearance.MouseDownBackColor = color;
             newSubmit.FlatAppearance.BorderColor = color;
@@ -211,11 +210,116 @@ namespace Windows_Environment_Variables
 
         private void editSubmit_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Do you really want to overwrite this environment variable? You can't do undo this change.", "Overwrite environment variable",
+            if(string.IsNullOrWhiteSpace(editName.Text))
+            {
+                MessageBox.Show("You need to select a existing variable environment first !","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                return;
+            }
+
+            if (MessageBox.Show("Do you really want to overwrite this environment variable?  You can't do undo this change, Dont touch anything if you don't know what you're doing !", "Overwrite environment variable",
             MessageBoxButtons.YesNo, MessageBoxIcon.Question,
             MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
             {
-                //TODO: Stuff
+                setEnvironmentVariable(editName.Text, editValue.Text);
+            }
+        }
+
+        private void newSubmit_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(newName.Text))
+            {
+                MessageBox.Show("You need to give a name to your variable environment first !", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(newValue.Text))
+            {
+                MessageBox.Show("You need to give a value to your variable environment first !", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            setEnvironmentVariable(newName.Text, newValue.Text);
+        }
+        
+        public bool IsUserAdministrator()
+        {
+            //bool value to hold our return value
+            bool isAdmin;
+            try
+            {
+                //get the currently logged in user
+                WindowsIdentity user = WindowsIdentity.GetCurrent();
+                WindowsPrincipal principal = new WindowsPrincipal(user);
+                isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                isAdmin = false;
+            }
+            catch (Exception ex)
+            {
+                isAdmin = false;
+            }
+            return isAdmin;
+        }
+
+        public void setEnvironmentVariable(string name,string value) 
+        {
+            if (IsUserAdministrator())
+            {
+                using (var envKey = Registry.LocalMachine.OpenSubKey(
+                      @"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",
+                      true))
+                {
+                    Contract.Assert(envKey != null, @"registry key is missing!");
+                    envKey.SetValue(name, value);
+                    SendNotifyMessage((IntPtr)HWND_BROADCAST, WM_SETTINGCHANGE,
+                        (UIntPtr)0, "Environment");
+                }
+
+                ListAllEnvironmentVariables();
+            }
+            else
+            {
+                MessageBox.Show("You need to start this application in administrador mode in order to execute this action. Try Again", "Admin Rights Required",
+                MessageBoxButtons.OK, MessageBoxIcon.Exclamation,
+                MessageBoxDefaultButton.Button1);
+            }
+        }
+
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(editName.Text))
+            {
+                MessageBox.Show("You need to select a variable environment first !", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (MessageBox.Show("Do you really want to DELETE '"+editName+"' environment variable? You can't do undo this change, Dont touch anything if you don't know what you're doing !", "DELETE environment variable",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
+            MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
+            {
+                setEnvironmentVariable(editName.Text, "");
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            DialogResult result = folderBrowserDialog1.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                newValue.Text = folderBrowserDialog1.SelectedPath;
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            openFileDialog1.Title = "Choose a file";
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                string direccion = openFileDialog1.FileName;
+                newValue.Text = direccion;
             }
         }
  
