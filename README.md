@@ -7,7 +7,7 @@ A quick and useful .NET application for windows environment variables edition.
 
 [Download latest PORTABLE version](https://github.com/sdkcarlos/WinEnvVariablesEditor/raw/master/Windows%20Environment%20Variables/bin/Debug/Windows%20Environment%20Variables.exe)
 
-[Download latest InstallShield version](Windows Environment Variables/github-src/downloads/SDkCarlos Environment variables editor v1.0.exe)
+[Download latest InstallShield version](https://github.com/sdkcarlos/WinEnvVariablesEditor/raw/master/Windows%20Environment%20Variables/github-src/downloads/SDkCarlos%20Environment%20variables%20editor%20v1.0.exe)
 
 
 ### The editor uses an easy and modern UI !
