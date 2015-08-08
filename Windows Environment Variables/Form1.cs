@@ -14,10 +14,11 @@ using System.Windows.Forms;
 using System.Security.Principal;
 using Microsoft.Win32;
 using System.Diagnostics.Contracts;
+using System.Diagnostics;
 
 namespace Windows_Environment_Variables
 {
-    public partial class Form1 : Form
+    public partial class winEnvEditor : Form
     {
         // Import the kernel32 dll.
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -35,7 +36,7 @@ namespace Windows_Environment_Variables
             UIntPtr wParam, string lParam);
 
 
-        public Form1()
+        public winEnvEditor()
         {
             InitializeComponent();
         }
@@ -50,10 +51,14 @@ namespace Windows_Environment_Variables
         private void Form1_Load(object sender, EventArgs e)
         {
             ListAllEnvironmentVariables();
-
             setAppColorFromWindows();
 
-            
+            if (!IsUserAdministrator()) 
+            {
+                MessageBox.Show("You need to start this application in administrador mode in order to edit environment variables. Try Again", "Admin Rights Required",
+                MessageBoxButtons.OK, MessageBoxIcon.Exclamation,
+                MessageBoxDefaultButton.Button1);
+            }
         }
 
         private void ListAllEnvironmentVariables() 
@@ -70,110 +75,6 @@ namespace Windows_Environment_Variables
             }
 
             var compName = System.Environment.GetEnvironmentVariables()["COMPUTERNAME"];
-        }
-
-        
-
-        /// <summary>
-        /// method for getting all available environment variables
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<string, string> GetEnvironmentVariables()
-        {
-            try
-            {
-                //dictionary object to hold the key/value pairs
-                Dictionary<string, string> variables = new Dictionary<string, string>();
-
-                //loop through the list and add to our dictionary list
-                Parallel.ForEach<DictionaryEntry>(Environment.GetEnvironmentVariables().OfType<DictionaryEntry>(), entry =>
-                {
-                    variables.Add(entry.Key.ToString(), entry.Value.ToString());
-                });
-
-                return variables;
-            }
-            catch (SecurityException ex)
-            {
-                Console.WriteLine("Error retrieving environment variables: {0}", ex.Message);
-                return null;
-            }
-        }
-
-
-        /// <summary>
-        /// method for retrieving an environment variable by it's name
-        /// </summary>
-        /// <param name="name">the name of the environment variable we're looking for</param>
-        /// <returns></returns>
-        public string GetEnvironmentVariableByName(string name)
-        {
-            try
-            {
-                //get the variable
-                string variable = Environment.GetEnvironmentVariable(name);
-
-                //check for a value, if nothing is returned let the application know
-                if (!string.IsNullOrEmpty(variable))
-                    return variable;
-                else
-                    return "The requested environment variable could not be found";
-            }
-            catch (SecurityException ex)
-            {
-                Console.WriteLine(string.Format("Error searching for environment variable: {0}", ex.Message));
-                return string.Empty;
-            }
-        }
-
-        private bool DoesEnvironmentVariableExist(string variable, EnvironmentVariableTarget target = EnvironmentVariableTarget.User)
-        {
-            try
-            {
-                return string.IsNullOrEmpty(Environment.GetEnvironmentVariable(variable, target)) ? false : true;
-            }
-            catch (SecurityException)
-            {
-                return false;
-            }
-        }
-
-
-
-        /// <summary>
-        /// method for handling environment variable values. Will:
-        /// Update
-        /// Create
-        /// Delete
-        /// </summary>
-        /// <param name="variable">the variable we're looking for</param>
-        /// <param name="value">the value to set it to (null for deleting a variable)</param>
-        /// <param name="target">the targer, defaults to User</param>
-        /// <returns></returns>
-        public void SetEnvironmentVariableValue(string variable, string value = null, EnvironmentVariableTarget target = EnvironmentVariableTarget.User)
-        {
-            try
-            {
-                //first make sure a name is provided
-                if (string.IsNullOrEmpty(variable))
-                    throw new ArgumentException("Variable names cannot be empty or null", "variable");
-
-                if (!DoesEnvironmentVariableExist(variable, target))
-                    throw new Exception(string.Format("The environment variable {0} was not found", variable));
-                else
-                    Environment.SetEnvironmentVariable(variable, value, target);
-
-                Console.WriteLine(string.Format("The environment variable {0} has been deleted", variable));
-
-            }
-            catch (SecurityException ex)
-            {
-                Console.WriteLine(string.Format("Error setting environment variable {0}: {1}", variable, ex.Message));
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine(string.Format("Error setting environment variable {0}: {1}", variable, ex.Message));
-            }
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
@@ -221,6 +122,9 @@ namespace Windows_Environment_Variables
             MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
             {
                 setEnvironmentVariable(editName.Text, editValue.Text);
+                MessageBox.Show("The environment variable was successfully updated. Restart the application or a new command prompt to see it.", "Environment variable " + editName.Text + " successfully updated",
+                MessageBoxButtons.OK, MessageBoxIcon.Information,
+                MessageBoxDefaultButton.Button1);
             }
         }
 
@@ -239,6 +143,11 @@ namespace Windows_Environment_Variables
             }
 
             setEnvironmentVariable(newName.Text, newValue.Text);
+
+            MessageBox.Show("The environment variable was successfull saved. Restart the application or a new command prompt to see it.", "Environment variable " + newName.Text + " successfully saved",
+                MessageBoxButtons.OK, MessageBoxIcon.Information,
+                MessageBoxDefaultButton.Button1);
+
         }
         
         public bool IsUserAdministrator()
@@ -252,14 +161,15 @@ namespace Windows_Environment_Variables
                 WindowsPrincipal principal = new WindowsPrincipal(user);
                 isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
             }
-            catch (UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException)
             {
                 isAdmin = false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 isAdmin = false;
             }
+
             return isAdmin;
         }
 
@@ -276,8 +186,6 @@ namespace Windows_Environment_Variables
                     SendNotifyMessage((IntPtr)HWND_BROADCAST, WM_SETTINGCHANGE,
                         (UIntPtr)0, "Environment");
                 }
-
-                ListAllEnvironmentVariables();
             }
             else
             {
@@ -295,11 +203,14 @@ namespace Windows_Environment_Variables
                 return;
             }
 
-            if (MessageBox.Show("Do you really want to DELETE '"+editName+"' environment variable? You can't do undo this change, Dont touch anything if you don't know what you're doing !", "DELETE environment variable",
+            if (MessageBox.Show("Do you really want to DELETE '"+editName.Text+"' environment variable? You can't do undo this change, Dont touch anything if you don't know what you're doing !", "DELETE environment variable",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation,
             MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
             {
                 setEnvironmentVariable(editName.Text, "");
+                MessageBox.Show("The environment variable was successfully deleted. Restart the application or a new command prompt to see it.", "Environment variable " + editName.Text + " successfully deleted",
+                MessageBoxButtons.OK, MessageBoxIcon.Information,
+                MessageBoxDefaultButton.Button1);
             }
         }
 
@@ -321,6 +232,11 @@ namespace Windows_Environment_Variables
                 string direccion = openFileDialog1.FileName;
                 newValue.Text = direccion;
             }
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://github.com/sdkcarlos/WinEnvVariablesEditor");
         }
  
     }
