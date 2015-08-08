@@ -5,7 +5,7 @@ A quick and useful .NET application for windows environment variables edition.
 
 ### Download the latest version here :
 
-[Download latest version](https://github.com/sdkcarlos/WinEnvVariablesEditor/raw/master/Windows%20Environment%20Variables/bin/Debug/Windows%20Environment%20Variables.exe)
+[Download latest PORTABLE version](https://github.com/sdkcarlos/WinEnvVariablesEditor/raw/master/Windows%20Environment%20Variables/bin/Debug/Windows%20Environment%20Variables.exe)
 
 
 
